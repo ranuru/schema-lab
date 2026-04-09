@@ -2,6 +2,7 @@ FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
 COPY gradlew .
 COPY gradle gradle
+RUN chmod +x gradlew
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 COPY src src
