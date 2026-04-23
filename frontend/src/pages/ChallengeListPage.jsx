@@ -25,9 +25,12 @@ export default function ChallengeListPage() {
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 16px' }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8, color: '#f7fafc' }}>
-        SchemaLab
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f7fafc' }}>
+          SchemaLab
+        </h1>
+        <Link to="/about" style={{ fontSize: 13, color: '#718096' }}>About</Link>
+      </div>
       <p style={{ color: '#a0aec0', marginBottom: 32 }}>
         Practice schema matching and schema versioning challenges.
       </p>
