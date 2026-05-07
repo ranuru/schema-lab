@@ -39,17 +39,31 @@ public class DataSeeder implements CommandLineRunner {
       "{USER_CODE}\n" + //
       "\n" + //
       "try:\n" + //
-      "    result = migrate(input_data)\n" + //
+      "    result = migrate(input_data['record'])\n" + //
       "    print(json.dumps({\"ok\": True, \"result\": result}))\n" + //
       "except Exception as e:\n" + //
       "    print(json.dumps({\"ok\": False, \"error\": str(e)}))";
 
   private final String MATCHING_TEMPLATE_PY = """
+        #
+        # Match fields from schemaA to schemaB.
+        # @param {Object} schemaA - JSON Schema object
+        # @param {Object} schemaB - JSON Schema object
+        # @returns [<{source: string, target: string}>]
+        #
       def match_schemas(schema_a, schema_b):
           return []
       """;
 
-  private final String VERSIONING_TEMPLATE_PY = "def migrate(record): return {}";
+  private final String VERSIONING_TEMPLATE_PY = """
+        #
+        # Migrate a record from schema v1 to schema v2.
+        # @param record - A v1 record instance
+        # @returns {Object} - A v2 record instance
+        #
+      def migrate(record):
+        return {}
+      """;;
 
   @Override
   public void run(String... args) {
