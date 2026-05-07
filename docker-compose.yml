@@ -4,9 +4,13 @@ services:
     ports:
       - "8080:8080"
 
+  runner:
+    build: ./runner
+
   frontend:
     build: ./frontend
     ports:
       - "80:80"
     depends_on:
       - backend
+      - runner

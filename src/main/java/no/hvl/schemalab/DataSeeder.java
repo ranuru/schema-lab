@@ -3,26 +3,67 @@ package no.hvl.schemalab;
 import no.hvl.schemalab.model.*;
 import no.hvl.schemalab.repository.AppUserRepository;
 import no.hvl.schemalab.repository.ChallengeRepository;
+import no.hvl.schemalab.repository.ChallengeVariantRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import lombok.Data;
+
 import java.util.List;
 
 @Component
+@Data
 public class DataSeeder implements CommandLineRunner {
 
   private final ChallengeRepository challengeRepository;
+  private final ChallengeVariantRepository challengeVariantRepository;
   private final AppUserRepository appUserRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public DataSeeder(ChallengeRepository challengeRepository,
-      AppUserRepository appUserRepository,
-      PasswordEncoder passwordEncoder) {
-    this.challengeRepository = challengeRepository;
-    this.appUserRepository = appUserRepository;
-    this.passwordEncoder = passwordEncoder;
-  }
+  private final String MATCHING_HARNESS_PY = "import json, sys\n" + //
+      "input_data = json.loads(sys.stdin.read())\n" + //
+      "\n" + //
+      "{USER_CODE}\n" + //
+      "\n" + //
+      "try:\n" + //
+      "    result = match_schemas(input_data['schemaA'], input_data['schemaB'])\n" + //
+      "    print(json.dumps({\"ok\": True, \"result\": result}))\n" + //
+      "except Exception as e:\n" + //
+      "    print(json.dumps({\"ok\": False, \"error\": str(e)}))";
+
+  private final String VERSIONING_HARNESS_PY = "import json, sys\n" + //
+      "input_data = json.loads(sys.stdin.read())\n" + //
+      "\n" + //
+      "{USER_CODE}\n" + //
+      "\n" + //
+      "try:\n" + //
+      "    result = migrate(input_data['record'])\n" + //
+      "    print(json.dumps({\"ok\": True, \"result\": result}))\n" + //
+      "except Exception as e:\n" + //
+      "    print(json.dumps({\"ok\": False, \"error\": str(e)}))";
+
+  private final String MATCHING_TEMPLATE_PY = """
+        #
+        # Match fields from schemaA to schemaB.
+        # @param {Object} schemaA - JSON Schema object
+        # @param {Object} schemaB - JSON Schema object
+        # @returns [<{source: string, target: string}>]
+        #
+      def match_schemas(schema_a, schema_b):
+          return []
+      """;
+
+  private final String VERSIONING_TEMPLATE_PY = """
+        #
+        # Migrate a record from schema v1 to schema v2.
+        # @param record - A v1 record instance
+        # @returns {Object} - A v2 record instance
+        #
+      def migrate(record):
+        return {}
+      """;;
 
   @Override
   public void run(String... args) {
@@ -37,6 +78,18 @@ public class DataSeeder implements CommandLineRunner {
     }
   }
 
+  /// HELPER METHODS
+
+  private void addPythonVariant(Challenge challenge, String starterCode, String harnessTemplate) {
+    ChallengeVariant v = new ChallengeVariant();
+    v.setChallenge(challenge);
+    v.setLanguage("python");
+    v.setStarterCode(starterCode);
+    v.setHarnessTemplate(harnessTemplate);
+    challengeVariantRepository.save(v);
+  }
+
+  //
   private void seedDevUser() {
     if (appUserRepository.findByUsername("dev").isEmpty()) {
       AppUser dev = new AppUser();
@@ -169,6 +222,8 @@ public class DataSeeder implements CommandLineRunner {
     c.setTestCases(List.of(visible, hidden));
 
     challengeRepository.save(c);
+
+    addPythonVariant(c, MATCHING_TEMPLATE_PY, MATCHING_HARNESS_PY);
   }
 
   private void seedChallenge2() {
@@ -264,6 +319,8 @@ public class DataSeeder implements CommandLineRunner {
     c.setTestCases(testCases);
 
     challengeRepository.save(c);
+
+    addPythonVariant(c, VERSIONING_TEMPLATE_PY, VERSIONING_HARNESS_PY);
   }
 
   private void seedChallenge3() {
@@ -385,6 +442,8 @@ public class DataSeeder implements CommandLineRunner {
     c.setTestCases(List.of(visible, hidden));
 
     challengeRepository.save(c);
+
+    addPythonVariant(c, MATCHING_TEMPLATE_PY, MATCHING_HARNESS_PY);
   }
 
   private void seedChallenge4() {
@@ -485,6 +544,8 @@ public class DataSeeder implements CommandLineRunner {
     c.setTestCases(testCases);
 
     challengeRepository.save(c);
+
+    addPythonVariant(c, VERSIONING_TEMPLATE_PY, VERSIONING_HARNESS_PY);
   }
 
   private void seedChallenge5() {
@@ -631,6 +692,8 @@ public class DataSeeder implements CommandLineRunner {
     c.setTestCases(List.of(visible, hidden));
 
     challengeRepository.save(c);
+
+    addPythonVariant(c, MATCHING_TEMPLATE_PY, MATCHING_HARNESS_PY);
   }
 
   private void seedChallenge6() {
@@ -730,5 +793,7 @@ public class DataSeeder implements CommandLineRunner {
     c.setTestCases(testCases);
 
     challengeRepository.save(c);
+
+    addPythonVariant(c, VERSIONING_TEMPLATE_PY, VERSIONING_HARNESS_PY);
   }
 }
