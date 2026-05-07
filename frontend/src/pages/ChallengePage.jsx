@@ -56,6 +56,19 @@ export default function ChallengePage() {
   const [running, setRunning] = useState(false)
   const [results, setResults] = useState(null)
   const codeRef = useRef('')
+  const [language, setLanguage] = useState('javascript')
+  const availableLanguages = challenge ? ['javascript',
+    ...challenge.variants.map(v => v.language)]
+    : ['javascript']
+  const currentStarterCode = language ===
+    'javascript'
+    ? challenge.starterCode
+    : challenge.variants.find(v => v.language
+      === language)?.starterCode ?? ''
+
+  useEffect(() => {
+    codeRef.current = currentStarterCode
+  }, [language])
 
   useEffect(() => {
     api.get(`/challenges/${id}`)
@@ -77,7 +90,27 @@ export default function ChallengePage() {
     for (const tc of visibleTests) {
       const input = JSON.parse(tc.inputJson)
       const expected = JSON.parse(tc.expectedJson)
-      const response = await runWorker(challenge.harnessCode, codeRef.current, input)
+      let response
+
+      if (language === 'javascript') {
+        response = await runWorker(challenge.harnessCode, codeRef.current, input)
+      } else {
+        const variant = challenge.variants.find(v => v.language === language)
+        try {
+          const res = await fetch('/runner/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              code: codeRef.current,
+              input,
+              harnessTemplate: variant.harnessTemplate,
+            }),
+          })
+          response = await res.json()
+        } catch (err) {
+          response = { ok: false, error: err.message }
+        }
+      }
 
       if (!response.ok) {
         testResults.push({ description: tc.description, pass: false, actual: null, expected, error: response.error })
@@ -97,7 +130,7 @@ export default function ChallengePage() {
         code: codeRef.current,
         status: 'PASS',
         testResults: JSON.stringify(testResults),
-      }).catch(() => {})
+      }).catch(() => { })
     }
   }
 
@@ -172,8 +205,35 @@ export default function ChallengePage() {
 
       {/* Right column */}
       <div style={{ width: '40%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+        <div style={{
+          padding: '8px 16px',
+          borderBottom: '1px solid #2d3748', display: 'flex', gap: 8
+        }}>
+          {availableLanguages.map(lang => (
+            <button
+              key={lang}
+              onClick={() => setLanguage(lang)}
+              style={{
+                padding: 'rpx 12px',
+                fontSize: 12,
+                background: language === lang ?
+                  '#3182ce' : 'transparent',
+                color: language === lang ? '#fff' : '#718096',
+                border: '1px solid #2d3748',
+                borderRadius: 4,
+                cursor: 'pointer',
+              }}
+            >
+              {lang === 'javascript' ? 'JavaScript' : 'Python'}
+            </button>
+          ))}
+        </div>
+
+
         <div style={{ flex: 1, minHeight: 0 }}>
           <Editor
+            key={language}
             height="100%"
             defaultLanguage="javascript"
             defaultValue={challenge.starterCode}
