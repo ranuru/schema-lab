@@ -3,8 +3,16 @@ import { useParams, Link } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import api from '../api/axios'
 
+function sortKeys(val) {
+  if (Array.isArray(val)) return val.map(sortKeys)
+  if (val && typeof val === 'object') {
+    return Object.fromEntries(Object.keys(val).sort().map(k => [k, sortKeys(val[k])]))
+  }
+  return val
+}
+
 function deepEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b)
+  return JSON.stringify(sortKeys(a)) === JSON.stringify(sortKeys(b))
 }
 
 function sortBySource(arr) {
