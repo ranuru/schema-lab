@@ -60,15 +60,13 @@ export default function ChallengePage() {
   const availableLanguages = challenge ? ['javascript',
     ...challenge.variants.map(v => v.language)]
     : ['javascript']
-  const currentStarterCode = language ===
-    'javascript'
-    ? challenge.starterCode
-    : challenge.variants.find(v => v.language
-      === language)?.starterCode ?? ''
-
   useEffect(() => {
-    codeRef.current = currentStarterCode
-  }, [language])
+    if (!challenge) return
+    const starterCode = language === 'javascript'
+      ? challenge.starterCode
+      : challenge.variants.find(v => v.language === language)?.starterCode ?? ''
+    codeRef.current = starterCode
+  }, [language, challenge])
 
   useEffect(() => {
     api.get(`/challenges/${id}`)
@@ -235,8 +233,12 @@ export default function ChallengePage() {
           <Editor
             key={language}
             height="100%"
-            defaultLanguage="javascript"
-            defaultValue={challenge.starterCode}
+            defaultLanguage={language}
+            defaultValue={
+              language === 'javascript'
+                ? challenge.starterCode
+                : challenge.variants.find(v => v.language === language)?.starterCode ?? ''
+            }
             theme="vs-dark"
             onChange={value => { codeRef.current = value ?? '' }}
             options={{
