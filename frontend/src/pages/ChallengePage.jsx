@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import api from '../api/axios'
+import NavBar from '../components/NavBar'
 
 function sortKeys(val) {
   if (Array.isArray(val)) return val.map(sortKeys)
@@ -144,7 +145,9 @@ export default function ChallengePage() {
   if (!challenge) return <div style={{ padding: 40, color: '#a0aec0' }}>Loading…</div>
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <NavBar />
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       {/* Left column */}
       <div style={{
         width: '60%',
@@ -326,6 +329,7 @@ export default function ChallengePage() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   )
