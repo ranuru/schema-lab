@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import ChallengeListPage from './pages/ChallengeListPage'
 import ChallengePage from './pages/ChallengePage'
+import CreateChallengePage from './pages/CreateChallengePage'
 import AboutPage from './pages/AboutPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -27,9 +28,13 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <Routes>
+        <Route path="/" element={<Navigate to="/challenges" replace />} />
+        <Route path="/challenges" element={<ChallengeListPage />} />
+        <Route path="/challenges/new" element={<CreateChallengePage />} />
+        <Route path="/challenges/:id" element={<ChallengePage />} />
+        <Route path="/about" element={<AboutPage />} />
+      </Routes>
     </BrowserRouter>
   )
 }
