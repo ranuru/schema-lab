@@ -64,6 +64,7 @@ export default function ChallengeListPage() {
               <th style={{ padding: '8px 12px' }}>Title</th>
               <th style={{ padding: '8px 12px' }}>Type</th>
               <th style={{ padding: '8px 12px' }}>Difficulty</th>
+              <th style={{ padding: '8px 12px' }}>Author</th>
             </tr>
           </thead>
           <tbody>
@@ -88,6 +89,9 @@ export default function ChallengeListPage() {
                   <span style={{ color: DIFFICULTY_COLOR[c.difficulty] ?? '#e2e8f0' }}>
                     {c.difficulty}
                   </span>
+                </td>
+                <td style={{ padding: '12px 12px', color: '#718096', fontSize: 13 }}>
+                  {c.createdBy ?? '—'}
                 </td>
               </tr>
             ))}

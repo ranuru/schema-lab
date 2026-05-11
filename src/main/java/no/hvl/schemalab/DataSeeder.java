@@ -95,7 +95,7 @@ public class DataSeeder implements CommandLineRunner {
       AppUser dev = new AppUser();
       dev.setUsername("dev");
       dev.setPasswordHash(passwordEncoder.encode("dev"));
-      dev.setRole("USER");
+      dev.setRole("ADMIN");
       appUserRepository.save(dev);
     }
   }

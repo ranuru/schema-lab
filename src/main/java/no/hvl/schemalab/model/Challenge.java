@@ -23,16 +23,18 @@ public class Challenge {
 
     private String type;
 
+    private String createdBy;
+
     @Column(columnDefinition = "TEXT")
     private String starterCode;
 
     @Column(columnDefinition = "TEXT")
     private String harnessCode;
 
-    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<SchemaDoc> schemas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<TestCase> testCases = new ArrayList<>();
 
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
