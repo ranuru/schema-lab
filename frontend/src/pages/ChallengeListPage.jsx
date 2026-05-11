@@ -29,7 +29,23 @@ export default function ChallengeListPage() {
         <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f7fafc' }}>
           SchemaLab
         </h1>
-        <Link to="/about" style={{ fontSize: 13, color: '#718096' }}>About</Link>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'baseline' }}>
+          <Link
+            to="/challenges/new"
+            style={{
+              fontSize: 13,
+              color: '#f7fafc',
+              background: '#4299e1',
+              padding: '5px 14px',
+              borderRadius: 6,
+              fontWeight: 600,
+              textDecoration: 'none',
+            }}
+          >
+            + New Challenge
+          </Link>
+          <Link to="/about" style={{ fontSize: 13, color: '#718096' }}>About</Link>
+        </div>
       </div>
       <p style={{ color: '#a0aec0', marginBottom: 32 }}>
         Practice schema matching and schema versioning challenges.

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import ChallengeListPage from './pages/ChallengeListPage'
 import ChallengePage from './pages/ChallengePage'
+import CreateChallengePage from './pages/CreateChallengePage'
 import AboutPage from './pages/AboutPage'
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/challenges" replace />} />
         <Route path="/challenges" element={<ChallengeListPage />} />
+        <Route path="/challenges/new" element={<CreateChallengePage />} />
         <Route path="/challenges/:id" element={<ChallengePage />} />
         <Route path="/about" element={<AboutPage />} />
       </Routes>
