@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
+import NavBar from '../components/NavBar'
 
 const DIFFICULTY_COLOR = {
   EASY: '#68d391',
@@ -15,12 +16,17 @@ const TYPE_LABEL = {
 
 export default function ChallengeListPage() {
   const [challenges, setChallenges] = useState([])
+  const [passedIds, setPassedIds] = useState(new Set())
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    api.get('/challenges')
-      .then(res => setChallenges(res.data))
-      .catch(() => setError('Failed to load challenges.'))
+    Promise.all([
+      api.get('/challenges'),
+      api.get('/submissions/me/passed'),
+    ]).then(([challengesRes, passedRes]) => {
+      setChallenges(challengesRes.data)
+      setPassedIds(new Set(passedRes.data))
+    }).catch(() => setError('Failed to load challenges.'))
   }, [])
 
   return (
@@ -51,41 +57,46 @@ export default function ChallengeListPage() {
         Practice schema matching and schema versioning challenges.
       </p>
 
-      {error && <p style={{ color: '#fc8181' }}>{error}</p>}
+        {error && <p style={{ color: '#fc8181' }}>{error}</p>}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid #2d3748', color: '#718096', fontSize: 13, textAlign: 'left' }}>
-            <th style={{ padding: '8px 12px' }}>#</th>
-            <th style={{ padding: '8px 12px' }}>Title</th>
-            <th style={{ padding: '8px 12px' }}>Type</th>
-            <th style={{ padding: '8px 12px' }}>Difficulty</th>
-          </tr>
-        </thead>
-        <tbody>
-          {challenges.map((c, i) => (
-            <tr
-              key={c.id}
-              style={{ borderBottom: '1px solid #1a202c' }}
-            >
-              <td style={{ padding: '12px 12px', color: '#718096', fontSize: 14 }}>{i + 1}</td>
-              <td style={{ padding: '12px 12px' }}>
-                <Link to={`/challenges/${c.id}`} style={{ fontWeight: 500 }}>
-                  {c.title}
-                </Link>
-              </td>
-              <td style={{ padding: '12px 12px', color: '#a0aec0', fontSize: 14 }}>
-                {TYPE_LABEL[c.type] ?? c.type}
-              </td>
-              <td style={{ padding: '12px 12px', fontSize: 14 }}>
-                <span style={{ color: DIFFICULTY_COLOR[c.difficulty] ?? '#e2e8f0' }}>
-                  {c.difficulty}
-                </span>
-              </td>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid #2d3748', color: '#718096', fontSize: 13, textAlign: 'left' }}>
+              <th style={{ padding: '8px 12px', width: 32 }}></th>
+              <th style={{ padding: '8px 12px' }}>#</th>
+              <th style={{ padding: '8px 12px' }}>Title</th>
+              <th style={{ padding: '8px 12px' }}>Type</th>
+              <th style={{ padding: '8px 12px' }}>Difficulty</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {challenges.map((c, i) => (
+              <tr
+                key={c.id}
+                style={{ borderBottom: '1px solid #1a202c' }}
+              >
+                <td style={{ padding: '12px 12px', fontSize: 14, color: '#68d391' }}>
+                  {passedIds.has(c.id) ? '✓' : ''}
+                </td>
+                <td style={{ padding: '12px 12px', color: '#718096', fontSize: 14 }}>{i + 1}</td>
+                <td style={{ padding: '12px 12px' }}>
+                  <Link to={`/challenges/${c.id}`} style={{ fontWeight: 500 }}>
+                    {c.title}
+                  </Link>
+                </td>
+                <td style={{ padding: '12px 12px', color: '#a0aec0', fontSize: 14 }}>
+                  {TYPE_LABEL[c.type] ?? c.type}
+                </td>
+                <td style={{ padding: '12px 12px', fontSize: 14 }}>
+                  <span style={{ color: DIFFICULTY_COLOR[c.difficulty] ?? '#e2e8f0' }}>
+                    {c.difficulty}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   )
 }

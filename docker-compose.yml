@@ -1,8 +1,31 @@
 services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: schemalab
+      POSTGRES_USER: schemalab
+      POSTGRES_PASSWORD: schemalab
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U schemalab"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build: .
     ports:
       - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/schemalab
+      SPRING_DATASOURCE_USERNAME: schemalab
+      SPRING_DATASOURCE_PASSWORD: schemalab
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   runner:
     build: ./runner
@@ -14,3 +37,6 @@ services:
     depends_on:
       - backend
       - runner
+
+volumes:
+  postgres_data:

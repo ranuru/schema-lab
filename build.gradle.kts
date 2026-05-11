@@ -18,19 +18,18 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-h2console")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	runtimeOnly("org.postgresql:postgresql")
 
 	compileOnly("org.projectlombok:lombok:1.18.46")
 	annotationProcessor("org.projectlombok:lombok:1.18.46")
-	
+
 	testCompileOnly("org.projectlombok:lombok:1.18.46")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
 
-
-	runtimeOnly("com.h2database:h2")
+	testRuntimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")

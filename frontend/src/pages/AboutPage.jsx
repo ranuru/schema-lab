@@ -1,6 +1,10 @@
+import NavBar from '../components/NavBar'
+
 export default function AboutPage() {
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 16px' }}>
+    <>
+      <NavBar />
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 16px' }}>
       <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8, color: '#f7fafc' }}>
         About SchemaLab
       </h1>
@@ -85,6 +89,7 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }
