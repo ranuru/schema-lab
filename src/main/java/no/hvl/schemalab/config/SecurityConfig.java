@@ -44,6 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/challenges/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/challenges").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/challenges/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/challenges/**").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/submissions/**").authenticated()

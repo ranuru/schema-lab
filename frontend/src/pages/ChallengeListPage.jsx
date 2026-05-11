@@ -31,6 +31,7 @@ export default function ChallengeListPage() {
 
   return (
     <>
+      <NavBar />
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
           <h1 style={{ fontSize: 28, fontWeight: 700, color: '#f7fafc' }}>
@@ -68,6 +69,7 @@ export default function ChallengeListPage() {
               <th style={{ padding: '8px 12px' }}>Title</th>
               <th style={{ padding: '8px 12px' }}>Type</th>
               <th style={{ padding: '8px 12px' }}>Difficulty</th>
+              <th style={{ padding: '8px 12px' }}>Author</th>
             </tr>
           </thead>
           <tbody>
@@ -92,6 +94,9 @@ export default function ChallengeListPage() {
                   <span style={{ color: DIFFICULTY_COLOR[c.difficulty] ?? '#e2e8f0' }}>
                     {c.difficulty}
                   </span>
+                </td>
+                <td style={{ padding: '12px 12px', color: '#718096', fontSize: 13 }}>
+                  {c.createdBy ?? '—'}
                 </td>
               </tr>
             ))}
