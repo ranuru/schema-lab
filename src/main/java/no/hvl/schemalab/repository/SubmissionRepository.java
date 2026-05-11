@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     List<Submission> findByUser(AppUser user);
+    List<Submission> findByUserAndStatus(AppUser user, String status);
 }

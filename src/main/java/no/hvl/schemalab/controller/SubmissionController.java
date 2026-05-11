@@ -58,4 +58,16 @@ public class SubmissionController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return submissionRepository.findByUser(user);
     }
+
+    @GetMapping("/me/passed")
+    public List<Long> passedChallengeIds() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser user = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return submissionRepository.findByUserAndStatus(user, "PASS")
+                .stream()
+                .map(s -> s.getChallenge().getId())
+                .distinct()
+                .toList();
+    }
 }

@@ -3,6 +3,7 @@ package no.hvl.schemalab.config;
 import no.hvl.schemalab.repository.AppUserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,7 +42,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/challenges/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/challenges/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/challenges").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/challenges/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/challenges/**").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/submissions/**").authenticated()

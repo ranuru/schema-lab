@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import api from '../api/axios'
+import NavBar from '../components/NavBar'
+import { useAuth } from '../context/AuthContext'
 
 function sortKeys(val) {
   if (Array.isArray(val)) return val.map(sortKeys)
@@ -58,6 +60,8 @@ function compareResult(challengeType, actual, expected) {
 
 export default function ChallengePage() {
   const { id } = useParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const [challenge, setChallenge] = useState(null)
   const [error, setError] = useState(null)
   const [activeSchema, setActiveSchema] = useState(0)
@@ -144,7 +148,9 @@ export default function ChallengePage() {
   if (!challenge) return <div style={{ padding: 40, color: '#a0aec0' }}>Loading…</div>
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <NavBar />
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       {/* Left column */}
       <div style={{
         width: '60%',
@@ -163,11 +169,52 @@ export default function ChallengePage() {
           </span>
         </div>
 
-        <h1 style={{ fontSize: 22, fontWeight: 700, marginTop: 12, marginBottom: 16, color: '#f7fafc' }}>
-          {challenge.title}
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 12, marginBottom: 4 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#f7fafc', margin: 0 }}>
+            {challenge.title}
+          </h1>
+          {(user?.username === challenge.createdBy || user?.role === 'ADMIN') && (
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 16 }}>
+              <Link
+                to={`/challenges/${id}/edit`}
+                style={{
+                  fontSize: 13,
+                  color: '#f7fafc',
+                  background: '#2d3748',
+                  border: '1px solid #4a5568',
+                  padding: '4px 12px',
+                  borderRadius: 5,
+                  textDecoration: 'none',
+                }}
+              >
+                Edit
+              </Link>
+              <button
+                onClick={async () => {
+                  if (!confirm('Delete this challenge?')) return
+                  await api.delete(`/challenges/${id}`)
+                  navigate('/challenges')
+                }}
+                style={{
+                  fontSize: 13,
+                  color: '#fc8181',
+                  background: 'none',
+                  border: '1px solid #822727',
+                  padding: '4px 12px',
+                  borderRadius: 5,
+                  cursor: 'pointer',
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+        {challenge.createdBy && (
+          <p style={{ fontSize: 12, color: '#4a5568', marginBottom: 12 }}>by {challenge.createdBy}</p>
+        )}
 
-        <p style={{ color: '#a0aec0', lineHeight: 1.7, marginBottom: 28 }}>
+        <p style={{ color: '#a0aec0', lineHeight: 1.7, marginTop: 12, marginBottom: 28 }}>
           {challenge.description}
         </p>
 
@@ -326,6 +373,7 @@ export default function ChallengePage() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   )
