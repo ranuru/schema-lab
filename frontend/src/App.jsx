@@ -19,6 +19,7 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/challenges" element={<ProtectedRoute><ChallengeListPage /></ProtectedRoute>} />
+      <Route path="/challenges/new" element={<ProtectedRoute><CreateChallengePage /></ProtectedRoute>} />
       <Route path="/challenges/:id" element={<ProtectedRoute><ChallengePage /></ProtectedRoute>} />
       <Route path="/about" element={<AboutPage />} />
     </Routes>
@@ -27,14 +28,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/challenges" replace />} />
-        <Route path="/challenges" element={<ChallengeListPage />} />
-        <Route path="/challenges/new" element={<CreateChallengePage />} />
-        <Route path="/challenges/:id" element={<ChallengePage />} />
-        <Route path="/about" element={<AboutPage />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
