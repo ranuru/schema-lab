@@ -5,6 +5,7 @@ import ChallengePage from './pages/ChallengePage'
 import AboutPage from './pages/AboutPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import HowToPage from './pages/HowToPage'
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
@@ -20,6 +21,7 @@ function AppRoutes() {
       <Route path="/challenges" element={<ProtectedRoute><ChallengeListPage /></ProtectedRoute>} />
       <Route path="/challenges/:id" element={<ProtectedRoute><ChallengePage /></ProtectedRoute>} />
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/how-to" element={<HowToPage />} />
     </Routes>
   )
 }

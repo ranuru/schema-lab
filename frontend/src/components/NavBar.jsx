@@ -24,6 +24,7 @@ export default function NavBar() {
         SchemaLab
       </Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <Link to="/how-to" style={{ fontSize: 13, color: '#718096' }}>How To</Link>
         <Link to="/about" style={{ fontSize: 13, color: '#718096' }}>About</Link>
         {user && (
           <>
