@@ -1,4 +1,23 @@
 # SchemaLab
 
-SchemaLab is a web-based learning platform for understanding schema matching and versioning. Designed to bridge the gap between theory and practical knowledge, SchemaLab presents users with specific schema versioning and matching challenges. As part of our semester project in the course DAT355 at the Western Norway University of Applied Sciences, we have developed this application together with a project report. 
+A web-based learning platform for schema matching and schema versioning. Semester project for DAT355 at HVL.
 
+## Running the app
+
+Requires [Docker](https://www.docker.com/) with the Compose plugin.
+
+```bash
+docker compose up --build
+```
+
+The app will be available at [http://localhost](http://localhost).
+
+To stop:
+
+```bash
+docker compose down
+```
+
+## Authors
+
+Runar S. Røssevold and Fredrik Moen
