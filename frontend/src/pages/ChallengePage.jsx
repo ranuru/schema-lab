@@ -5,6 +5,9 @@ import api from '../api/axios'
 import NavBar from '../components/NavBar'
 import { useAuth } from '../context/AuthContext'
 
+const RUN_TIMEOUT_MS = 5000
+const RUN_TIMEOUT_MESSAGE = 'Timeout (5s)'
+
 function sortKeys(val) {
   if (Array.isArray(val)) return val.map(sortKeys)
   if (val && typeof val === 'object') {
@@ -30,8 +33,8 @@ function runWorker(harnessCode, userCode, input) {
     const timeout = setTimeout(() => {
       worker.terminate()
       URL.revokeObjectURL(url)
-      resolve({ ok: false, error: 'Timeout (5s)' })
-    }, 5000)
+      resolve({ ok: false, error: RUN_TIMEOUT_MESSAGE })
+    }, RUN_TIMEOUT_MS)
 
     worker.onmessage = (e) => {
       clearTimeout(timeout)
@@ -51,8 +54,37 @@ function runWorker(harnessCode, userCode, input) {
   })
 }
 
+async function runPython(harnessTemplate, userCode, input) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), RUN_TIMEOUT_MS)
+
+  try {
+    const res = await fetch('/runner/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: userCode,
+        input,
+        harnessTemplate,
+      }),
+      signal: controller.signal,
+    })
+    return await res.json()
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      return { ok: false, error: RUN_TIMEOUT_MESSAGE }
+    }
+    return { ok: false, error: err.message }
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 function compareResult(challengeType, actual, expected) {
   if (challengeType === 'SCHEMA_MATCHING') {
+    if (!Array.isArray(actual) || !Array.isArray(expected)) {
+      return false
+    }
     return deepEqual(sortBySource(actual), sortBySource(expected))
   }
   return deepEqual(actual, expected)
@@ -106,20 +138,7 @@ export default function ChallengePage() {
         response = await runWorker(challenge.harnessCode, codeRef.current, input)
       } else {
         const variant = challenge.variants.find(v => v.language === language)
-        try {
-          const res = await fetch('/runner/run', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              code: codeRef.current,
-              input,
-              harnessTemplate: variant.harnessTemplate,
-            }),
-          })
-          response = await res.json()
-        } catch (err) {
-          response = { ok: false, error: err.message }
-        }
+        response = await runPython(variant.harnessTemplate, codeRef.current, input)
       }
 
       if (!response.ok) {
