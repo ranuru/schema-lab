@@ -5,6 +5,9 @@ import api from '../api/axios'
 import NavBar from '../components/NavBar'
 import { useAuth } from '../context/AuthContext'
 
+const RUN_TIMEOUT_MS = 5000
+const RUN_TIMEOUT_MESSAGE = 'Timeout (5s)'
+
 function sortKeys(val) {
   if (Array.isArray(val)) return val.map(sortKeys)
   if (val && typeof val === 'object') {
@@ -30,8 +33,8 @@ function runWorker(harnessCode, userCode, input) {
     const timeout = setTimeout(() => {
       worker.terminate()
       URL.revokeObjectURL(url)
-      resolve({ ok: false, error: 'Timeout (5s)' })
-    }, 5000)
+      resolve({ ok: false, error: RUN_TIMEOUT_MESSAGE })
+    }, RUN_TIMEOUT_MS)
 
     worker.onmessage = (e) => {
       clearTimeout(timeout)
@@ -53,7 +56,7 @@ function runWorker(harnessCode, userCode, input) {
 
 async function runPython(harnessTemplate, userCode, input) {
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 5000)
+  const timeout = setTimeout(() => controller.abort(), RUN_TIMEOUT_MS)
 
   try {
     const res = await fetch('/runner/run', {
@@ -69,7 +72,7 @@ async function runPython(harnessTemplate, userCode, input) {
     return await res.json()
   } catch (err) {
     if (err.name === 'AbortError') {
-      return { ok: false, error: 'Timeout (5s)' }
+      return { ok: false, error: RUN_TIMEOUT_MESSAGE }
     }
     return { ok: false, error: err.message }
   } finally {
