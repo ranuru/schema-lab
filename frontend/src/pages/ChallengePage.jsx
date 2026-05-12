@@ -51,8 +51,37 @@ function runWorker(harnessCode, userCode, input) {
   })
 }
 
+async function runPython(harnessTemplate, userCode, input) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+
+  try {
+    const res = await fetch('/runner/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: userCode,
+        input,
+        harnessTemplate,
+      }),
+      signal: controller.signal,
+    })
+    return await res.json()
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      return { ok: false, error: 'Timeout (5s)' }
+    }
+    return { ok: false, error: err.message }
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 function compareResult(challengeType, actual, expected) {
   if (challengeType === 'SCHEMA_MATCHING') {
+    if (!Array.isArray(actual) || !Array.isArray(expected)) {
+      return false
+    }
     return deepEqual(sortBySource(actual), sortBySource(expected))
   }
   return deepEqual(actual, expected)
@@ -106,20 +135,7 @@ export default function ChallengePage() {
         response = await runWorker(challenge.harnessCode, codeRef.current, input)
       } else {
         const variant = challenge.variants.find(v => v.language === language)
-        try {
-          const res = await fetch('/runner/run', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              code: codeRef.current,
-              input,
-              harnessTemplate: variant.harnessTemplate,
-            }),
-          })
-          response = await res.json()
-        } catch (err) {
-          response = { ok: false, error: err.message }
-        }
+        response = await runPython(variant.harnessTemplate, codeRef.current, input)
       }
 
       if (!response.ok) {
