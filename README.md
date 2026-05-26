@@ -1,6 +1,7 @@
 # SchemaLab
 
 SchemaLab is a web-based learning platform for **schema matching** and **schema versioning** challenges (DAT355 semester project at HVL).
+In short, it lets learners practice transforming and aligning data schemas through interactive coding challenges with automated feedback.
 
 Users can browse and solve challenges, while authenticated users can submit solutions and create/edit challenges.
 
